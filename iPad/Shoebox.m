@@ -39,8 +39,7 @@
 			// must create stacks dictionary
 			NSMutableDictionary *stacksDict = [[NSMutableDictionary alloc] init];
 			[shoeboxDict setObject:stacksDict forKey:@"stacks"];
-
-      stacksDict = nil;
+			stacksDict = nil;
 
 			// should add at least one, new blank stack (later), and make it the current stack
 			self.currentStackID = 0;
@@ -212,8 +211,7 @@
 	if (deletingStackDict){
 		Stack* deletingStack = [[Stack alloc] initWithStackDict:deletingStackDict];
 		[deletingStack empty];
-
-    deletingStack = nil;
+		deletingStack = nil;
 	}
 
 	NSMutableDictionary *stacks = [shoeboxDict objectForKey:@"stacks"];
@@ -282,8 +280,7 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
 	BOOL doesNeedRender = stack.needsRender;
-
-  stack = nil;
+	stack = nil;
 
 	return doesNeedRender;
 }
@@ -292,16 +289,14 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	Stack* stack = [[Stack alloc] initWithStackDict:stackDict];
 	stack.thumbImage = thumbImage;
-
-  stack = nil;
+	stack = nil;
 }
 
 - (NSString *) backgroundImageNameForStackID:(NSUInteger)stackID {
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	Stack* stack = [[Stack alloc] initWithStackDict:stackDict];
 	NSString* bgName = stack.backgroundImageName;
-
-  stack = nil;
+	stack = nil;
 
 	return bgName;
 }
@@ -314,10 +309,8 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	if (stackDict) {
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
-
 		caption = stack.caption;
-
-    stack = nil;
+		stack = nil;
 	} else {
 		caption = nil;
 	}
@@ -330,10 +323,8 @@
 	if (stackDict) {
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
 		stack.caption = newCaption;
-
 		[self save];
-
-    stack = nil;
+		stack = nil;
 	} else {
 		NSLog(@"Shoebox setCaption didn't find stack id %u",stackID);
 	}
@@ -347,8 +338,7 @@
 	if (stackDict) {
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
 		pics = [stack getPics];
-
-    stack = nil;
+		stack = nil;
 	}
 
 	return pics;
@@ -369,12 +359,9 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	if (stackDict) {
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
-
 		[stack addPic:pic];
-
 		[self save];
-
-    stack = nil;
+		stack = nil;
 	} else {
 		NSLog(@"Shoebox addPic didn't find stack id %u",stackID);
 	}
@@ -384,10 +371,8 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	if (stackDict) {
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
-
 		[stack deletePicID:picID];
 		stack = nil;
-
 		[self save];
 	} else {
 		NSLog(@"Shoebox deletePicID didn't find stack id %u",stackID);
@@ -403,8 +388,7 @@
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
 		[stack bringToFrontPicID:picID];
 		[self save];
-
-    stack = nil;
+		stack = nil;
 	}
 }
 
@@ -424,8 +408,7 @@
 		//    [stack saveTransform:(CGAffineTransform)transform forPicID:(NSUInteger)picID];
 		// we've made a change that the stack doesn't know about; stack needs rendering
 		stack.needsRender = YES;
-
-    stack = nil;
+		stack = nil;
 	}
 }
 
@@ -433,10 +416,8 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	Stack* stack = [[Stack alloc] initWithStackDict:stackDict];
 	stack.backgroundImageName = bgName;
-
 	[self save];
-
-  stack = nil;
+	stack = nil;
 }
 
 
