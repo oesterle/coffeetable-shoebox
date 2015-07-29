@@ -19,37 +19,35 @@
 
 @implementation Shoebox
 
-@synthesize shoeboxDict,
-			loaded,
-			currentStackID;
+@synthesize shoeboxDict, loaded, currentStackID;
 
 #pragma mark -
 #pragma mark Opening the Shoebox
 
 - (id) init {
-	if (self = [super init]){		
+	if (self = [super init]){
 		NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 		NSString *documentsDirectory = [paths objectAtIndex:0];
 		NSString *shoeboxFile = [documentsDirectory stringByAppendingPathComponent:@"shoebox.bplist"];
-		
+
 		// load shoebox if file exists
 		if ([[NSFileManager defaultManager] fileExistsAtPath:shoeboxFile]){
 			shoeboxDict = [NSKeyedUnarchiver unarchiveObjectWithFile:shoeboxFile];
 		} else {
 			shoeboxDict = [[NSMutableDictionary alloc] init];
-			
+
 			// must create stacks dictionary
 			NSMutableDictionary *stacksDict = [[NSMutableDictionary alloc] init];
 			[shoeboxDict setObject:stacksDict forKey:@"stacks"];
-            
-            stacksDict = nil;
-			
+
+      stacksDict = nil;
+
 			// should add at least one, new blank stack (later), and make it the current stack
 			self.currentStackID = 0;
 		}
-		
+
 		[self save];
-		
+
 		self.loaded = YES;
 	}
 	return self;
@@ -61,27 +59,27 @@
 
 - (void) save {
 	NSFileManager *fm = [NSFileManager defaultManager];
-	
+
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *documentsDirectory = [paths objectAtIndex:0];
-	
+
 	// Ensure that we have directories for both Pictures and Stack Thumbnails
 	NSString *pixDir = [documentsDirectory stringByAppendingPathComponent:@"pix"];
 	if (![fm fileExistsAtPath:pixDir]){
 		[fm createDirectoryAtPath:pixDir withIntermediateDirectories:NO attributes:nil error:NULL];
 	}
-	
+
 	NSString *stackThumbsDir = [documentsDirectory stringByAppendingPathComponent:@"stackThumbs"];
 	if (![fm fileExistsAtPath:stackThumbsDir]){
 		[fm createDirectoryAtPath:stackThumbsDir withIntermediateDirectories:NO attributes:nil error:NULL];
 	}
-	
+
 	// NSLog(@"shoebox: %@",shoeboxDict);
-	
+
 	NSString *shoeboxFile = [documentsDirectory stringByAppendingPathComponent:@"shoebox.bplist"];
-		
+
 	BOOL didSaveShoebox = [NSKeyedArchiver archiveRootObject:shoeboxDict toFile:shoeboxFile];
-	
+
 	NSLog(@"Shoebox didSaveShoebox: %i",didSaveShoebox);
 }
 
@@ -91,15 +89,15 @@
 	if (nextPicIDNumber == nil) {
 		nextPicIDNumber = [NSNumber numberWithInteger:0];
 	}
-	
+
 	NSUInteger nextInteger = [nextPicIDNumber integerValue];
-	
+
 	NSUInteger nextNextInteger = nextInteger + 1;
-	
+
 	[shoeboxDict setObject:[NSNumber numberWithInteger:nextNextInteger] forKey:@"nextPicIDNumber"];
-	
+
 	[self save];
-	
+
 	return nextInteger;
 }
 
@@ -109,17 +107,17 @@
 	if (nextStackIDNumber == nil) {
 		nextStackIDNumber = [NSNumber numberWithInteger:0];
 	}
-	
+
 	NSUInteger nextID = [nextStackIDNumber integerValue];
-	
+
 	NSUInteger nextNextNum = nextID + 1;
-	
+
 	[shoeboxDict setObject:[NSNumber numberWithInteger:nextNextNum] forKey:@"nextStackIDNumber"];
-	
+
 	NSLog(@"nextStackID called: %u",nextID);
-	
+
 	[self save];
-	
+
 	return nextID;
 }
 
@@ -129,27 +127,27 @@
 	if (nextStackIDNumber == nil) {
 		nextStackIDNumber = [NSNumber numberWithInteger:0];
 	}
-	
+
 	NSUInteger nextID = [nextStackIDNumber integerValue];
-	
+
 	return nextID;
 }
 
 - (NSUInteger) currentStackID {
 	NSUInteger theID = [[shoeboxDict objectForKey:@"currentStackID"] integerValue];
-	
+
 	// ensure stack exists
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:theID];
-	
+
 	if (stackDict == nil) {
 		// something bad happened; we can't find the current stack
 		NSLog(@"Couldn't find CURRENT stack with ID: %u",theID);
-		
+
 		// let's recover, by finding a neighbor
 		theID = [self findNeighborToStackID:theID];
 		self.currentStackID = theID;
 	}
-	
+
 	return theID;
 }
 
@@ -166,16 +164,16 @@
 - (NSMutableArray *) stackIDs {
 	// returns an array of stackIDs, sorted numerically (which should be chronological)
 	// or nil, if there are no stacks yet
-	
+
 	NSMutableArray *keys;
-	
+
 	NSDictionary *stacks = [shoeboxDict objectForKey:@"stacks"];
 	if (stacks) {
 		keys = [NSMutableArray arrayWithArray:[[stacks allKeys] sortedArrayUsingSelector:@selector(compare:)]];
 	} else {
 		keys = nil;
 	}
-	
+
 	return keys;
 }
 
@@ -187,18 +185,18 @@
 	} else {
 		aStackDict = nil;
 	}
-	
+
 	return aStackDict;
 }
 
 - (NSUInteger) makeNewStack {
 	Stack *newStack = [[Stack alloc] init];
-	
+
 	[self addStack:newStack];
 	NSUInteger newStackID = newStack.stackID;
-	
-    newStack = nil;
-	
+
+	newStack = nil;
+
 	return newStackID;
 }
 
@@ -209,35 +207,35 @@
 // Caller should unload any loaded stack-owned resources beforehand
 - (NSUInteger) deleteStackID:(NSUInteger)deletingStackID {
 	NSInteger neighborStackID;
-	
+
 	NSMutableDictionary* deletingStackDict = [self getStackDictWithStackID:deletingStackID];
 	if (deletingStackDict){
 		Stack* deletingStack = [[Stack alloc] initWithStackDict:deletingStackDict];
 		[deletingStack empty];
 
-        deletingStack = nil;
+    deletingStack = nil;
 	}
-	
+
 	NSMutableDictionary *stacks = [shoeboxDict objectForKey:@"stacks"];
 	[stacks removeObjectForKey:[NSNumber numberWithInteger:deletingStackID]];
-	
+
 	[self save];
-	
+
 	neighborStackID = [self findNeighborToStackID:deletingStackID];
-	
+
 	return neighborStackID;
 }
 
 - (NSUInteger)findNeighborToStackID:(NSUInteger)aStackID{
 	NSInteger neighborStackID = -1;
-	
+
 	NSMutableDictionary *stacks = [shoeboxDict objectForKey:@"stacks"];
 	NSUInteger stackCt = [stacks count];
-	
+
 	if (stackCt < 1) {
 		// no stacks exist for some reason;
 		// create a new blank one
-		
+
 		neighborStackID = [self makeNewStack];
 	} else {
 		// there's at least one other existing stack
@@ -245,7 +243,7 @@
 		NSMutableArray* stackIDs = [self stackIDs];
 		neighborStackID = -1;
 		NSNumber* testStackIDNum;
-		
+
 		for (testStackIDNum in stackIDs) {
 			NSUInteger testStackID = [testStackIDNum integerValue];
 			if (aStackID > testStackID) {
@@ -264,7 +262,7 @@
 			}
 		}
 	}
-	
+
 	return neighborStackID;
 }
 
@@ -284,9 +282,9 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
 	BOOL doesNeedRender = stack.needsRender;
-	
-    stack = nil;
-	
+
+  stack = nil;
+
 	return doesNeedRender;
 }
 
@@ -295,16 +293,16 @@
 	Stack* stack = [[Stack alloc] initWithStackDict:stackDict];
 	stack.thumbImage = thumbImage;
 
-    stack = nil;
+  stack = nil;
 }
 
-- (NSString *) backgroundImageNameForStackID:(NSUInteger)stackID {	
+- (NSString *) backgroundImageNameForStackID:(NSUInteger)stackID {
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	Stack* stack = [[Stack alloc] initWithStackDict:stackDict];
 	NSString* bgName = stack.backgroundImageName;
-	
-    stack = nil;
-	
+
+  stack = nil;
+
 	return bgName;
 }
 
@@ -312,18 +310,18 @@
 
 - (NSString *) captionForStackID:(NSUInteger)stackID {
 	NSString *caption;
-	
+
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	if (stackDict) {
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
-		
+
 		caption = stack.caption;
-		
-        stack = nil;
+
+    stack = nil;
 	} else {
 		caption = nil;
 	}
-	
+
 	return caption;
 }
 
@@ -332,10 +330,10 @@
 	if (stackDict) {
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
 		stack.caption = newCaption;
-		
+
 		[self save];
-		
-        stack = nil;
+
+    stack = nil;
 	} else {
 		NSLog(@"Shoebox setCaption didn't find stack id %u",stackID);
 	}
@@ -349,10 +347,10 @@
 	if (stackDict) {
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
 		pics = [stack getPics];
-		
-        stack = nil;
+
+    stack = nil;
 	}
-	
+
 	return pics;
 }
 
@@ -371,12 +369,12 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	if (stackDict) {
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
-		
+
 		[stack addPic:pic];
-		
+
 		[self save];
-		
-        stack = nil;
+
+    stack = nil;
 	} else {
 		NSLog(@"Shoebox addPic didn't find stack id %u",stackID);
 	}
@@ -386,16 +384,15 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	if (stackDict) {
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
-		
+
 		[stack deletePicID:picID];
-		
-        stack = nil;
-		
+		stack = nil;
+
 		[self save];
 	} else {
 		NSLog(@"Shoebox deletePicID didn't find stack id %u",stackID);
 	}
-	
+
 }
 
 #pragma mark Updating Pics
@@ -404,12 +401,10 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	if (stackDict){
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
-		
 		[stack bringToFrontPicID:picID];
-		
 		[self save];
-		
-        stack = nil;
+
+    stack = nil;
 	}
 }
 
@@ -418,19 +413,19 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	if (stackDict){
 		Stack *stack = [[Stack alloc] initWithStackDict:stackDict];
-		
+
 		Pic *pic = [stack getPicWithPicID:picID];
 		pic.transform = transform;
-		
+
 		[self save];
-		
+
 		// we might not have to do as much here, if we add a similar convenience method in
 		// the stack:
 		//    [stack saveTransform:(CGAffineTransform)transform forPicID:(NSUInteger)picID];
 		// we've made a change that the stack doesn't know about; stack needs rendering
 		stack.needsRender = YES;
-		
-        stack = nil;
+
+    stack = nil;
 	}
 }
 
@@ -438,10 +433,10 @@
 	NSMutableDictionary *stackDict = [self getStackDictWithStackID:stackID];
 	Stack* stack = [[Stack alloc] initWithStackDict:stackDict];
 	stack.backgroundImageName = bgName;
-	
+
 	[self save];
-	
-    stack = nil;
+
+  stack = nil;
 }
 
 

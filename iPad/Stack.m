@@ -24,10 +24,10 @@
 	if (self = [super init]){
 		self.stackDict = [[NSMutableDictionary alloc] init];
 		NSMutableArray *pics = [[NSMutableArray alloc] init];
-        [stackDict setObject:pics forKey:@"pics"];
-        
-        pics = nil;
-		
+    [stackDict setObject:pics forKey:@"pics"];
+
+    pics = nil;
+
 		coffeetableAppDelegateiPad *del = [[UIApplication sharedApplication] delegate];
 		Shoebox *shoebox = del.shoebox;
 		if (shoebox) {
@@ -35,7 +35,7 @@
 		}
 		self.backgroundImageName = @"CoffeeTable";
 	}
-	
+
 	return self;
 }
 
@@ -61,19 +61,19 @@
 - (void) empty {
 	NSInteger i, ct;
 	NSMutableArray *pics = [stackDict objectForKey:@"pics"];
-	
+
 	if (pics){
 		ct = [pics count];
 		for (i = ct - 1; i >= 0; i--) {
 			NSMutableDictionary *picDict = [pics objectAtIndex:i];
 			// NSUInteger curPicID = [[picDict objectForKey:@"picID"] integerValue];
-		
+
 			Pic *pic = [[Pic alloc] initWithPicDict:picDict];
 			[pic deleteImageFile];
-			
+
 			[pics removeObjectAtIndex:i];
-			
-            pic = nil;
+
+      pic = nil;
 			// we're done
 		}
 	}
@@ -85,7 +85,7 @@
 
 - (void) addPic:(Pic *)aPic {
 	[[stackDict objectForKey:@"pics"] addObject:[aPic picDict]];
-	
+
 	// we've made a change; stack needs rendering
 	self.needsRender = YES;
 }
@@ -93,7 +93,7 @@
 - (void) deletePicID:(NSUInteger)picID {
 	NSUInteger i, ct;
 	NSMutableArray *pics = [stackDict objectForKey:@"pics"];
-	
+
 	if (pics){
 		ct = [pics count];
 		for (i = 0; i < ct; i++) {
@@ -103,14 +103,14 @@
 				// we've found it; delete it
 				Pic *pic = [[Pic alloc] initWithPicDict:picDict];
 				[pic deleteImageFile];
-				
+
 				[pics removeObjectAtIndex:i];
-				
-                pic = nil;
-				
+
+        pic = nil;
+
 				// we've made a change; stack needs rendering
 				self.needsRender = YES;
-				
+
 				// we're done
 				break;
 			}
@@ -122,7 +122,7 @@
 - (void) bringToFrontPicID:(NSUInteger)picID {
 	NSUInteger i, ct;
 	NSMutableArray *pics = [stackDict objectForKey:@"pics"];
-	
+
 	if (pics){
 		ct = [pics count];
 		for (i = 0; i < ct; i++) {
@@ -130,12 +130,12 @@
 			NSUInteger curPicID = [[picDict objectForKey:@"picID"] integerValue];
 			if (picID == curPicID) {
 				// we've found it; move it to last place in array (front of stack)
-				
+
 				[pics moveObjectToLastPlace:i];
-				
+
 				// we've made a change; stack needs rendering
 				self.needsRender = YES;
-				
+
 				// we're done
 				break;
 			}
@@ -149,27 +149,27 @@
 
 - (NSMutableArray *) getPics {
     NSMutableArray *pics = [[NSMutableArray alloc] init];
-	
+
 	NSArray *picDicts = [stackDict objectForKey:@"pics"];
 	NSUInteger i, ct;
-	
+
 	ct = [picDicts count];
 	for (i = 0; i < ct; i++) {
 		Pic* newPic = [[Pic alloc] initWithPicDict:[picDicts objectAtIndex:i]];
 		[pics addObject:newPic];
-        
-        newPic = nil;
+
+    newPic = nil;
 	}
-	
+
 	return pics;
 }
 
 - (Pic *) getPicWithPicID:(NSUInteger)picID {
 	Pic *pic = nil;
-	
+
 	NSUInteger i, ct;
 	NSMutableArray *pics = [stackDict objectForKey:@"pics"];
-	
+
 	if (pics){
 		ct = [pics count];
 		for (i = 0; i < ct; i++) {
@@ -177,14 +177,14 @@
 			NSUInteger curPicID = [[picDict objectForKey:@"picID"] integerValue];
 			if (picID == curPicID) {
 				// we've found it; move it to last place in array (front of stack)
-                pic = [[Pic alloc] initWithPicDict:picDict];
-				
+        pic = [[Pic alloc] initWithPicDict:picDict];
+
 				// we're done
 				break;
 			}
 		}
 	}
-	
+
 	return pic;
 }
 
@@ -192,18 +192,18 @@
 #pragma mark Finding where a Stack's thumbnail image is stored
 + (NSString *)makeThumbFileNameFromStackID:(NSUInteger)aStackID {
 	NSString *thumbFileName = [[NSString stringWithFormat:@"%u",aStackID] stringByAppendingString:@".jpg"];
-	
+
 	return thumbFileName;
 }
 
 + (NSString *)makeThumbFilePathFromStackID:(NSUInteger)aStackID {
 	NSString *thumbFileName = [Stack makeThumbFileNameFromStackID:aStackID];
-	
+
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *documentsDirectory = [paths objectAtIndex:0];
 	NSString *stackThumbsDir = [documentsDirectory stringByAppendingPathComponent:@"stackThumbs"];
 	NSString *thumbFilePath = [stackThumbsDir stringByAppendingPathComponent:thumbFileName];
-	
+
 	return thumbFilePath;
 }
 
@@ -212,11 +212,11 @@
 
 - (UIImage *)thumbImage {
 	UIImage *theThumbImage;
-	
+
 	NSString *thumbFilePath = [Stack makeThumbFilePathFromStackID:self.stackID];
-	
+
 	theThumbImage = [UIImage imageWithContentsOfFile:thumbFilePath];
-	
+
 	return theThumbImage;
 }
 
@@ -227,18 +227,18 @@
 
 - (NSData *) thumbJPEGData {
 	NSData *data;
-	
+
 	NSString *thumbFilePath = [Stack makeThumbFilePathFromStackID:self.stackID];
-	
+
 	data = [NSData dataWithContentsOfFile:thumbFilePath];
-	
+
 	return data;
 }
 
 - (void) setThumbJPEGData:(NSData *)inThumbJPEGData {
 	NSString *thumbImageFilePath = [Stack makeThumbFilePathFromStackID:self.stackID];
 	[inThumbJPEGData writeToFile:thumbImageFilePath atomically:YES];
-	
+
 	self.needsRender = NO;
 }
 
@@ -249,7 +249,7 @@
 	if (stackNeedsRerenderNum) {
 		stackNeedsRerender = [stackNeedsRerenderNum boolValue];
 	}
-	
+
 	return stackNeedsRerender;
 }
 
@@ -263,7 +263,7 @@
 
 - (void) setCaption:(NSString *)aCaption {
 	NSLog(@"caption changed to: %@",aCaption);
-	
+
 	[stackDict setObject:aCaption forKey:@"caption"];
 }
 
@@ -280,13 +280,13 @@
 	if (!bgName) {
 		return @"CoffeeTable";
 	}
-		
+
 	return bgName;
 }
 
 - (void) setBackgroundImageName:(NSString *)aBackgroundImageName {
 	[stackDict setObject:aBackgroundImageName forKey:@"backgroundImageName"];
-	
+
 	// we've made a change; stack needs rendering
 	self.needsRender = YES;
 }
