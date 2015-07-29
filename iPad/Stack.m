@@ -156,7 +156,7 @@
 		Pic* newPic = [[Pic alloc] initWithPicDict:[picDicts objectAtIndex:i]];
 		[pics addObject:newPic];
 
-    newPic = nil;
+		newPic = nil;
 	}
 
 	return pics;
@@ -175,7 +175,7 @@
 			NSUInteger curPicID = [[picDict objectForKey:@"picID"] integerValue];
 			if (picID == curPicID) {
 				// we've found it; move it to last place in array (front of stack)
-        pic = [[Pic alloc] initWithPicDict:picDict];
+				pic = [[Pic alloc] initWithPicDict:picDict];
 
 				// we're done
 				break;
