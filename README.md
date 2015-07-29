@@ -1,5 +1,5 @@
-CoffeeTable code sample
-=======================
+CoffeeTable Shoebox code sample
+===============================
 
 This is a pretty good representation of my iOS coding style.
 
