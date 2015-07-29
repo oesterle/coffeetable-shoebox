@@ -72,8 +72,7 @@
 			[pic deleteImageFile];
 
 			[pics removeObjectAtIndex:i];
-
-      pic = nil;
+			pic = nil;
 			// we're done
 		}
 	}
@@ -105,8 +104,7 @@
 				[pic deleteImageFile];
 
 				[pics removeObjectAtIndex:i];
-
-        pic = nil;
+				pic = nil;
 
 				// we've made a change; stack needs rendering
 				self.needsRender = YES;
