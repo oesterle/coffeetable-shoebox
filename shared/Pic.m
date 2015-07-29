@@ -9,7 +9,6 @@
 // This is a thin wrapper around picDict, an NSMutableDictionary (which is not easily subclassed)
 
 
-
 #import "Pic.h"
 #import "Shoebox.h"
 #import "coffeetableAppDelegateiPad.h"
