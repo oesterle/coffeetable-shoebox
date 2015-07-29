@@ -24,9 +24,9 @@
 	if (self = [super init]){
 		self.stackDict = [[NSMutableDictionary alloc] init];
 		NSMutableArray *pics = [[NSMutableArray alloc] init];
-    [stackDict setObject:pics forKey:@"pics"];
+		[stackDict setObject:pics forKey:@"pics"];
 
-    pics = nil;
+		pics = nil;
 
 		coffeetableAppDelegateiPad *del = [[UIApplication sharedApplication] delegate];
 		Shoebox *shoebox = del.shoebox;
